@@ -25,6 +25,7 @@ class VisualGridHuntGame:
             pos_tuple = (fx, fy)
             if pos_tuple != (0, 0) and pos_tuple not in self.walls:
                 self.food_positions.add(pos_tuple)
+        
 
         # Generate adversarial opponents
         self.opponents = []
@@ -44,6 +45,8 @@ class VisualGridHuntGame:
             'agent_pos': list(self.agent_pos),
             'opponent_positions': [list(op) for op in self.opponents],
             'smells_food': tuple(self.agent_pos) in self.food_positions,
+             # New toxin sensor
+            'smells_toxin':tuple(self.agent_pos) in self.toxic_traps,
             'hit_wall': tuple(self.agent_pos) in self.walls,
             'collision': self.collision,
             'score': self.score,
@@ -72,6 +75,9 @@ class VisualGridHuntGame:
         if tuple_pos in self.food_positions:
             self.food_positions.remove(tuple_pos)
             self.score += 20
+        # Toxic trap penalty
+        if tuple_pos in self.toxic_traps:
+            self.score -= 15
 
         for op in self.opponents:
             move = random.choice(['Up', 'Down', 'Left', 'Right', 'Stay'])
@@ -145,6 +151,32 @@ class GridGameGUI:
             y1 = (self.env.height - 1 - fy) * self.cell_size + offset
             self.canvas.create_oval(x1, y1, x1 + self.cell_size * 0.5, y1 + self.cell_size * 0.5, fill="#f59e0b",
                                     outline="#d97706")
+        
+        # ================================
+        # Draw Toxic Traps
+        # ================================
+
+        for tx, ty in self.env.toxic_traps:
+
+            center_x = tx * self.cell_size + self.cell_size / 2
+            center_y = (
+                self.env.height - 1 - ty
+            ) * self.cell_size + self.cell_size / 2
+
+            size = self.cell_size * 0.3
+
+            self.canvas.create_polygon(
+                center_x,
+                center_y - size,
+                center_x + size,
+                center_y,
+                center_x,
+                center_y + size,
+                center_x - size,
+                center_y,
+                fill="purple",
+                outline="black"
+            )
 
         for ox, oy in self.env.opponents:
             offset = self.cell_size * 0.2
