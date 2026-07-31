@@ -1,7 +1,7 @@
 # agent.py
 class GreedyGridAgent:
     """A simple agent that tries to move around systematically to clear the grid."""
-
+#test
     def __init__(self):
         self.actions_pool = ['Up', 'Down', 'Left', 'Right']
 
