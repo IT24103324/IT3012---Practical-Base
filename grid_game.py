@@ -1,7 +1,7 @@
 # grid_game.py
 import random
 
-
+#TEST
 class GridHuntGame:
     """A small Pacman-style grid environment (4x4) where an agent collects food."""
 
