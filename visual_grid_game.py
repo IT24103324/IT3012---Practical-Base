@@ -41,16 +41,19 @@ class VisualGridHuntGame:
         self.collision = False
 
     def get_percept(self) -> dict:
+        # Step 1.1: Partial Observability Trap
+        # The agent no longer knows its exact (x, y) coordinates.
+        # It only knows what is immediately around it.
+        
+        pos_tuple = tuple(self.agent_pos)
+        
+        # Check if there is a wall directly above (simulating "ahead")
+        wall_above = (self.agent_pos[0], self.agent_pos[1] + 1) in self.walls
+        
         return {
-            'agent_pos': list(self.agent_pos),
-            'opponent_positions': [list(op) for op in self.opponents],
-            'smells_food': tuple(self.agent_pos) in self.food_positions,
-             # New toxin sensor
-            'smells_toxin':tuple(self.agent_pos) in self.toxic_traps,
-            'hit_wall': tuple(self.agent_pos) in self.walls,
-            'collision': self.collision,
-            'score': self.score,
-            'remaining_food': len(self.food_positions)
+            'wall_ahead': wall_above,
+            'food_here': pos_tuple in self.food_positions,
+            # We hide the global 'agent_pos' to force reliance on local sensors
         }
 
     def execute_action(self, action: str):
