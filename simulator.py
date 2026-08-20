@@ -1,8 +1,8 @@
 from visual_grid_game import VisualGridHuntGame
-from agent import ModelBasedAgent
+from agent import SearchAgent
 
 
-def run_simulation():
+def run_search_simulation():
 
     env = VisualGridHuntGame(
         width=10,
@@ -11,12 +11,34 @@ def run_simulation():
         num_opponents=0
     )
 
-    agent = ModelBasedAgent()
+    agent = SearchAgent()
 
-    print("======================================")
-    print(" IT3012 Practical 02")
-    print(" Simple Reflex Agent")
-    print("======================================")
+    # =========================================================
+    # CHANGE THIS TO:
+    #
+    # 'BFS'
+    # 'DFS'
+    # 'UCS'
+    # =========================================================
+
+    agent.active_algo = 'DFS'
+
+    print(
+        "======================================"
+    )
+
+    print(
+        " IT3012 Practical 03"
+    )
+
+    print(
+        f" Search Algorithm: "
+        f"{agent.active_algo}"
+    )
+
+    print(
+        "======================================"
+    )
 
     while not env.is_done():
 
@@ -27,8 +49,10 @@ def run_simulation():
         )
 
         print(
-            f"Percept: {percept} "
-            f"| Action: {action}"
+            f"Position: {env.agent_pos} "
+            f"| Food: {percept['all_food']} "
+            f"| Action: {action} "
+            f"| Score: {env.score}"
         )
 
         env.execute_action(
@@ -36,14 +60,19 @@ def run_simulation():
         )
 
     print()
-    print("Game Over!")
+
+    print(
+        "========== GAME OVER =========="
+    )
+
     print(
         f"Final Score: {env.score}"
     )
+
     print(
         f"Steps: {env.steps}"
     )
 
 
-if __name__ == "__main__":
-    run_simulation()
+if __name__ == '__main__':
+    run_search_simulation()
