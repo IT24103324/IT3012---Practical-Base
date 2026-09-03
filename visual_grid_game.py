@@ -315,13 +315,13 @@ class GridGameGUI:
         num_food=10,
         num_opponents=0,
         walls=None,
-        agent_type="simple"
+        agent_type="AStar"
     ):
 
         self.root = root
 
         self.root.title(
-            "IT3012 - Practical 02"
+            "IT3012 - Practical 04 - A* Search"
         )
 
         self.env = VisualGridHuntGame(
@@ -672,7 +672,7 @@ if __name__ == "__main__":
         height=10,
         num_food=10,
         num_opponents=0,
-        agent_type="BFS"
+        agent_type="AStar"
     )
 
     root.mainloop()
