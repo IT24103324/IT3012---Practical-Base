@@ -1,201 +1,102 @@
+# agent.py
+
 class SimpleReflexAgent:
     """
     Simple Reflex Agent.
 
-    Uses only the current percept.
-    Does not maintain memory/history.
+    The agent makes decisions only from the current percept.
+    It does not maintain any history or internal state.
     """
+
+    def __init__(self):
+        self.actions_pool = ['Up', 'Down', 'Left', 'Right']
 
     def sense_and_act(self, percept: dict) -> str:
 
-        # Rule 1:
-        # IF food is here THEN collect it
+        # Condition-Action Rule 1
+        # IF food is here THEN move onto the food
         if percept['food_here']:
-            return 'Suck'
+            return percept['food_action']
 
-        # Rule 2:
-        # IF wall is ahead THEN turn left
-        elif percept['wall_ahead']:
-            return 'Left'
+        # Condition-Action Rule 2
+        # IF there is a wall ahead THEN turn left
+        if percept['wall_ahead']:
+            return percept['turn_left']
 
-        # Rule 3:
+        # Condition-Action Rule 3
         # ELSE move forward
-        else:
-            return 'Forward'
+        return percept['forward']
 
 
 class ModelBasedAgent:
     """
     Model-Based Agent.
 
-    Maintains internal state/memory about visited cells
-    and previous actions.
+    This agent maintains an internal state using memory.
+    It remembers cells that it has already visited.
     """
 
     def __init__(self):
-
         # Internal memory
         self.visited_cells = set()
 
-        # Last action performed
+        # Remember the previous action
         self.last_action = None
 
-        # Internal estimated position
-        self.internal_position = [0, 0]
-
-        # Current direction
-        self.direction = 'Right'
-
-        # Number of consecutive wall encounters
-        self.wall_count = 0
+        # Current estimated position
+        self.current_position = (0, 0)
 
     def sense_and_act(self, percept: dict) -> str:
 
-        # =====================================================
-        # 1. UPDATE INTERNAL STATE
-        # =====================================================
+        # ---------------------------------------------------------
+        # Step 1: Update Internal State
+        # ---------------------------------------------------------
 
-        # Record current estimated position
-        current_cell = tuple(
-            self.internal_position
-        )
+        current_pos = percept['estimated_pos']
 
-        self.visited_cells.add(
-            current_cell
-        )
+        # Record the current cell
+        self.visited_cells.add(current_pos)
 
-        # =====================================================
-        # 2. FOOD RULE
-        # =====================================================
+        # ---------------------------------------------------------
+        # Step 2: Store the last action
+        # ---------------------------------------------------------
 
+        if self.last_action is not None:
+            self.last_action = self.last_action
+
+        # ---------------------------------------------------------
+        # Step 3: Condition-Action Rules
+        # ---------------------------------------------------------
+
+        # IF food is here THEN move forward
         if percept['food_here']:
+            action = percept['forward']
 
-            action = 'Suck'
+        # IF wall ahead AND left cell has not been visited
+        # THEN turn left
+        elif percept['wall_ahead'] and not percept['left_visited']:
+            action = percept['turn_left']
 
-            self.last_action = action
+        # IF wall ahead AND left cell is visited
+        # THEN turn right
+        elif percept['wall_ahead'] and percept['left_visited']:
+            action = percept['turn_right']
 
-            return action
-
-        # =====================================================
-        # 3. WALL DETECTED
-        # =====================================================
-
-        if percept['wall_ahead']:
-
-            self.wall_count += 1
-
-            # Change direction when wall encountered
-            if self.wall_count % 2 == 1:
-
-                action = 'Left'
-
+        # IF forward cell has already been visited
+        # THEN try another direction
+        elif percept['forward_visited']:
+            if not percept['right_visited']:
+                action = percept['turn_right']
+            elif not percept['left_visited']:
+                action = percept['turn_left']
             else:
+                action = percept['turn_right']
 
-                action = 'Right'
+        # Otherwise continue forward
+        else:
+            action = percept['forward']
 
-            self.last_action = action
-
-            self.update_internal_state(action)
-
-            return action
-
-        # =====================================================
-        # 4. NORMAL MOVEMENT
-        # =====================================================
-
-        self.wall_count = 0
-
-        action = 'Forward'
-
+        # Store the action in memory
         self.last_action = action
 
-        self.update_internal_state(action)
-
         return action
-
-    def update_internal_state(self, action):
-
-        """
-        Update the internal model based on the
-        selected action.
-        """
-
-        # -----------------------------------------------------
-        # Turning
-        # -----------------------------------------------------
-
-        if action == 'Left':
-
-            directions = [
-                'Up',
-                'Left',
-                'Down',
-                'Right'
-            ]
-
-            index = directions.index(
-                self.direction
-            )
-
-            self.direction = directions[
-                (index + 1) % 4
-            ]
-
-        elif action == 'Right':
-
-            directions = [
-                'Up',
-                'Right',
-                'Down',
-                'Left'
-            ]
-
-            index = directions.index(
-                self.direction
-            )
-
-            self.direction = directions[
-                (index + 1) % 4
-            ]
-
-        # -----------------------------------------------------
-        # Moving forward
-        # -----------------------------------------------------
-
-        elif action == 'Forward':
-
-            if self.direction == 'Up':
-                self.internal_position[1] += 1
-
-            elif self.direction == 'Down':
-                self.internal_position[1] -= 1
-
-            elif self.direction == 'Left':
-                self.internal_position[0] -= 1
-
-            elif self.direction == 'Right':
-                self.internal_position[0] += 1
-
-
-class GreedyGridAgent:
-    """
-    Kept for compatibility with the original starter code.
-    """
-
-    def __init__(self):
-
-        self.actions_pool = [
-            'Forward',
-            'Left',
-            'Right'
-        ]
-
-    def sense_and_act(self, percept: dict) -> str:
-
-        if percept.get('food_here', False):
-            return 'Suck'
-
-        if percept.get('wall_ahead', False):
-            return 'Left'
-
-        return 'Forward'
