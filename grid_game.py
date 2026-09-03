@@ -11,8 +11,8 @@ class GridHuntGame:
         self.agent_pos = [0, 0]  # Starting position (x, y)
 
         # Place a few random food pellets and obstacles (walls)
-        self.food_positions = {[1, 2], [2, 3], [3, 0], [2, 1]}
-        self.walls = {[1, 1], [2, 2]}
+        self.food_positions = {(1, 2), (2, 3), (3, 0), (2, 1)}
+        self.walls = {(1, 1), (2, 2)}
 
         self.score = 0
         self.steps = 0
@@ -37,7 +37,7 @@ class GridHuntGame:
         elif action == 'Left':
             new_pos[0] = max(0, new_pos[0] - 1)
         elif action == 'Right':
-            new_pos[0] = min(self.width - 1, new_pos[0] + 1)
+            new_pos[0] = min(self.width - 1, self.agent_pos[0] + 1)
 
         # Check collision with walls
         if tuple(new_pos) in self.walls:
